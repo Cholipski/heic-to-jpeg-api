@@ -1,0 +1,52 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      CONVERTER_WORKERS: "${CONVERTER_WORKERS:-8}"
+      CONVERTER_QUEUE_MAXSIZE: "${CONVERTER_QUEUE_MAXSIZE:-1024}"
+      CONVERTER_ENQUEUE_TIMEOUT_SEC: "${CONVERTER_ENQUEUE_TIMEOUT_SEC:-2.0}"
+      CONVERTER_JOB_TIMEOUT_SEC: "${CONVERTER_JOB_TIMEOUT_SEC:-30.0}"
+      CONVERTER_JPEG_QUALITY: "${CONVERTER_JPEG_QUALITY:-100}"
+      CONVERTER_MAX_UPLOAD_MB: "${CONVERTER_MAX_UPLOAD_MB:-50}"
+      UVICORN_WORKERS: "${UVICORN_WORKERS:-1}"
+      UVICORN_BACKLOG: "${UVICORN_BACKLOG:-2048}"
+      UVICORN_TIMEOUT_KEEP_ALIVE: "${UVICORN_TIMEOUT_KEEP_ALIVE:-5}"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2).read()",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+    cpus: "${API_CPUS:-8.0}"
+    mem_limit: "${API_MEM_LIMIT:-8g}"
+
+  loadtest:
+    image: locustio/locust:2.40.4
+    profiles: ["loadtest"]
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "8089:8089"
+    environment:
+      HEIC_FILE: "${HEIC_FILE:-/loadtest/assets/sample.heic}"
+      REQUEST_TIMEOUT_SEC: "${REQUEST_TIMEOUT_SEC:-60}"
+    volumes:
+      - ./loadtest:/loadtest:ro
+      - ./loadtest/results:/results
+    command: >
+      -f /loadtest/locustfile.py
+      --host=${LOADTEST_BASE_URL:-http://api:8000}
+      --web-host=0.0.0.0
+      --web-port=8089

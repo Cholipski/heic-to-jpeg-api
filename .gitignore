@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+dist/
+build/
+node_modules/
+loadtest/assets/*.heic
+.env

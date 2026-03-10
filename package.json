@@ -1,0 +1,14 @@
+{
+  "name": "file-converter",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "py:install": "python3 -m pip install -r requirements.txt",
+    "dev": "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload",
+    "start": "uvicorn app.main:app --host 0.0.0.0 --port 8000",
+    "check": "python3 -m compileall app loadtest",
+    "docker:up": "docker compose up --build -d api",
+    "docker:down": "docker compose down",
+    "load:test": "docker compose --profile loadtest up --build api loadtest"
+  }
+}
