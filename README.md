@@ -7,8 +7,6 @@ Projekt zachowuje kompatybilny kontrakt requestu oparty o pola:
 - `targetExtension`
 - `quality`
 
-Najwazniejsza zasada integracyjna jest prosta: klient moze przepiac sie na nowy URL bez zmiany payloadu requesta.
-
 ## Spis tresci
 
 - [Co robi ten projekt](#co-robi-ten-projekt)
@@ -39,8 +37,6 @@ Faktycznie wspierana konwersja to:
 
 - source: `heic`, `heif`
 - target: `jpg`, `jpeg`
-
-Warstwa HTTP zostala jednak przygotowana tak, aby zachowac legacy-compatible ksztalt requesta z polami `file`, `targetExtension`, `quality`.
 
 ## Najwazniejsze cechy
 
